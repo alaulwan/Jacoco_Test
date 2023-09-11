@@ -1,49 +1,43 @@
 #!groovy
-def call() {
+def doneBuild = false
 
-    def doneBuild = false
+pipeline {
+    agent { node { label 'alaa-node' } }
 
-    agent {
-            label 'artifactory-single'
+    tools {
+        maven 'maven3'
+        // jdk 'jdk8'
+    }
+    stages {
+        stage ('Clean') {
+            steps {
+                sh 'mvn clean'
+            }
         }
-        tools {
-            maven 'maven3'
-            jdk 'jdk8'
-        }
-        stages {
-           stage ('Clean') {
-                steps {
-                    sh 'mvn clean'
+        stage ('Build') {
+            steps {
+                sh script {
+
+                    doneBuild = true
+
+                    mvncmd = 'mvn -U install -T 1C'
+                    
+                    return mvncmd
                 }
-            }
-            stage ('Build') {
-                steps {
-                    sh script {
 
-                        doneBuild = true
-
-                        mvncmd = 'mvn -U install -T 1C'
-						
-                        return mvncmd
-                    }
-
-                 }
+                }
+        }
+        stage('Reports') {
+            steps {
+                jacoco(execPattern: '**/*.exec')
             }
         }
-        post {
-            always {
+    }
+    post {
+        always {
 
-                // JUnit Report
-                junit allowEmptyResults: !doneBuild, testResults: '**/target/**/*.xml'
-
-                cleanWs(
-                    deleteDirs: true,
-                    notFailBuild: true,
-                    patterns: [
-                        [pattern: 'build', type: 'INCLUDE'],
-                        [pattern: 'target', type: 'INCLUDE']
-                    ]
-                )
-            }
+            // JUnit Report
+            junit allowEmptyResults: !doneBuild, testResults: '**/target/**/*.xml'
         }
+    }
 }
