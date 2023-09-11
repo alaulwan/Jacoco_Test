@@ -27,11 +27,6 @@ pipeline {
 
                 }
         }
-        stage('Reports') {
-            steps {
-                jacoco(execPattern: '**/*.exec')
-            }
-        }
     }
     post {
         always {
