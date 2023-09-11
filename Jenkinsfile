@@ -3,9 +3,7 @@ def call() {
 
     def doneBuild = false
 
-    pipeline {
-
-        agent {
+    agent {
             label 'artifactory-single'
         }
         tools {
@@ -48,5 +46,4 @@ def call() {
                 )
             }
         }
-    }
 }
