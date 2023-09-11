@@ -9,7 +9,7 @@ def call() {
             label 'artifactory-single'
         }
         tools {
-            maven 'M36Latest'
+            maven 'maven3'
             jdk 'jdk8'
         }
         stages {
